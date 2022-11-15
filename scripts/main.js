@@ -2,7 +2,7 @@ function read_display_Quote(){
     //console.log("inside the function")
 
     //get into the right collection
-    db.collection("quotes").doc("tuesday")
+    db.collection("quotes").doc("Tuesday")
     .onSnapshot(function(tuesdayDoc) {
         //console.log(tuesdayDoc.data());
         document.getElementById("quote-goes-here").innerHTML=tuesdayDoc.data().quote;
@@ -29,3 +29,28 @@ function insertName(){
 }
 insertName();
 
+function populateCardsDynamically() {
+    let hikeCardTemplate = document.getElementById("hikeCardTemplate");
+    let hikeCardGroup = document.getElementById("hikeCardGroup");
+    
+    db.collection("hikes").get()
+        .then(allHikes => {
+            allHikes.forEach(doc => {
+                var hikeName = doc.data().name; //gets the name field
+                var hikeID = doc.data().code; //gets the unique ID field
+                var hikeLength = doc.data().length; //gets the length field
+                let testHikeCard = hikeCardTemplate.content.cloneNode(true);
+                testHikeCard.querySelector('.card-title').innerHTML = hikeName;     //equiv getElementByClassName
+                testHikeCard.querySelector('.card-length').innerHTML = hikeLength;  //equiv getElementByClassName
+                testHikeCard.querySelector('a').onclick = () => setHikeData(hikeID);//equiv getElementByTagName
+                testHikeCard.querySelector('img').src = `./images/${hikeID}.jpg`;   //equiv getElementByTagName
+                hikeCardGroup.appendChild(testHikeCard);
+            })
+
+        })
+}
+populateCardsDynamically();
+
+function setHikeData(id){
+    localStorage.setItem ('hikeID', id);
+}
